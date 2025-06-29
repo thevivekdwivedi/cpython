@@ -11,7 +11,7 @@ import typing
 import builtins as bltns
 from collections import OrderedDict
 from datetime import date
-from enum import Enum, EnumMeta, IntEnum, StrEnum, EnumType, Flag, IntFlag, unique, auto
+from enum import Enum, EnumMeta, IntEnum, StrEnum, EnumerableFunction, EnumType, Flag, IntFlag, unique, auto
 from enum import STRICT, CONFORM, EJECT, KEEP, _simple_enum, _test_simple_enum
 from enum import verify, UNIQUE, CONTINUOUS, NAMED_FLAGS, ReprEnum
 from enum import member, nonmember, _iter_bits_lsb, EnumDict
@@ -1239,6 +1239,25 @@ class TestMinimalFloatFunction(_EnumTests, _MinimalOutputTests, unittest.TestCas
         return values[count]
     #
     enum_type = ReprEnum('enum_type', {'_generate_next_value_':_generate_next_value_}, type=float)
+
+
+class TestEnumerableFunction(unittest.TestCase):
+    """Tests for the EnumerableFunction enum."""
+
+    def test_class_syntax(self):
+        class Operation(EnumerableFunction):
+            ADD = (1, lambda x, y: x + y)
+            MUL = (2, lambda x, y: x * y)
+        self.assertEqual(Operation.ADD.do(2, 3), 5)
+        self.assertEqual(Operation.MUL.do(2, 3), 6)
+
+    def test_function_syntax(self):
+        Operation = EnumerableFunction('Operation', {
+            'ADD': (1, lambda x, y: x + y),
+            'MUL': (2, lambda x, y: x * y),
+        })
+        self.assertEqual(Operation.ADD.do(2, 3), 5)
+        self.assertEqual(Operation.MUL.do(2, 3), 6)
 
 
 class TestSpecial(unittest.TestCase):

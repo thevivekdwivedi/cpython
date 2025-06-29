@@ -5,7 +5,7 @@ from types import MappingProxyType, DynamicClassAttribute
 
 __all__ = [
         'EnumType', 'EnumMeta', 'EnumDict',
-        'Enum', 'IntEnum', 'StrEnum', 'Flag', 'IntFlag', 'ReprEnum',
+        'Enum', 'IntEnum', 'StrEnum', 'EnumerableFunction', 'Flag', 'IntFlag', 'ReprEnum',
         'auto', 'unique', 'property', 'verify', 'member', 'nonmember',
         'FlagBoundary', 'STRICT', 'CONFORM', 'EJECT', 'KEEP',
         'global_flag_repr', 'global_enum_repr', 'global_str', 'global_enum',
@@ -1372,6 +1372,16 @@ class StrEnum(str, ReprEnum):
         return name.lower()
 
 
+class EnumerableFunction(Enum):
+    """Enum where each member is associated with a callable."""
+
+    def __new__(cls, value, do):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.do = do
+        return obj
+
+
 def pickle_by_global_name(self, proto):
     # should not be used with Flag-type enums
     return self.name
@@ -2164,4 +2174,4 @@ def _old_convert_(etype, name, module, filter, source=None, *, boundary=None):
     cls = etype(name, members, module=module, boundary=boundary or KEEP)
     return cls
 
-_stdlib_enums = IntEnum, StrEnum, IntFlag
+_stdlib_enums = IntEnum, StrEnum, IntFlag, EnumerableFunction
